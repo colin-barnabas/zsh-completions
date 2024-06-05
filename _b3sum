@@ -1,0 +1,34 @@
+#compdef b3sum
+
+_b3sum() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+        '--keyed[Use the keyed mode, reading the 32-byte key from stdin.]' \
+        '--derived_key=[Use the key derivation mode, with the given context string. Cannot be used with --keyed.]:context:' \
+        '--seek=[The starting output byte offset, before hex encoding.]:seek:' \
+        '--num-threads=[The maximum number of threads to use.By default, this is the number of logical cores. If this flag is omitted, or if its value is 0, RAYON_NUM_THREADS is also respected.]:num threads:' \
+        '--no-mmap[Disable memory mapping.]' \
+        '--no-names[Omit filenames in the output.]' \
+        '--raw[Write raw output bytes to stdout, rather than hex. "--no-names" is implied. In this case, only a single input is allowed.]' \
+        '--quet[Skip printing OK for each checked file. Must be used with "--check".]' \
+        + '(len)' \
+            {-l,--length}'+[The number of output bytes, before hex encoding.]:LEN:_guard "[0-9]#" "numeric value"' \
+        + '(check)' \
+            {-c,--check}'+[Read BLAKE3 sums from the \[FILE\]s and check them.]:FILES:_files' \
+        + '(help)' \
+            {-h,--help}'[Print help (see a summary with "-h").]' \
+        + '(vers)' \
+            {-V,--version}'[Print version.]' \
+        '*:: :_files' \
+        && ret=0
+}
+
+if [ "$funcstack[1]" = "_b3sum" ]; then
+    _b3sum "$@"
+else
+    compdef _b3sum b3sum
+fi

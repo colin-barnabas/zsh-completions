@@ -1,0 +1,3 @@
+#compdef w3mman
+
+compdef _man w3mman

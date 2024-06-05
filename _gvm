@@ -1,0 +1,115 @@
+#compdef gvm
+
+_gvm() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+        ":: :_gvm_commands" \
+        "*::: :->gvm" \
+        && ret=0
+    case $state in
+        gvm)
+            words=($line[1] "${words[@]}")
+            (( CURRENT += 1 ))
+            curcontext="${curcontext%:*:*}:gvm-command-$line[1]:"
+            case $line[1] in
+                alias)
+                    ret=0
+                ;;
+                cross)
+                    ret=0
+                ;;
+                diff)
+                    ret=0
+                ;;
+                get)
+                    ret=0
+                ;;
+                help)
+                    ret=0
+                ;;
+                implode)
+                    ret=0
+                ;;
+                install)
+                    ret=0
+                ;;
+                linkthis)
+                    ret=0
+                ;;
+                list)
+                    ret=0
+                ;;
+                listall)
+                    ret=0
+                ;;
+                pkgenv)
+                    ret=0
+                ;;
+                pkgset)
+                    ret=0
+                ;;
+                uninstall)
+                    ret=0
+                ;;
+                use)
+                    _arguments "${_arguments_options[@]}" \
+                        '--default[Permanently set default Go version]' \
+                        '::go_version :_gvm__available_versions'
+                    ret=0
+                ;;
+                version)
+                    ret=0
+                ;;
+                *)
+            esac
+            ;;
+        *)
+    esac
+
+}
+
+(( $+functions[_gvm_commands] )) ||
+    _gvm_commands() {
+        local commands; commands=(
+            'alias:Manage Go version aliases'
+            'cross:Install Go cross compilers'
+            'diff:View changes to Go root'
+            'get:Gets the latest code (for debugging)'
+            'help:Display this usage text'
+            'implode:Completely remove gvm'
+            'install:Install Go versions'
+            'linkthis:Link this directory into GOPATH'
+            'list: List installed Go versions'
+            'listall:List available versions'
+            'pkgenv:Edit the environment for a package set'
+            'pkgset:Manage Go package sets'
+            'uninstall:Uninstall Go versions'
+            'use:Select a Go version to use (--default to set permanently)'
+            'version:Print the gvm version number'
+        )
+        _describe -t commands 'gvm commands' commands "$@"
+    }
+
+(( $+functions[_gvm__use_commands] )) ||
+    _gvm__use_comands() {
+        local commands; commands=()
+        _describe -t commands 'gvm use commands' commands "$@"
+    }
+
+(( $+functions[_gvm__help_commands] )) ||
+    _gvm__help_commands() {
+        local commands; commands=()
+        _describe -t commands 'gvm help commands' commands "$@"
+    }
+
+_gvm__available_versions() {
+    local -a versions
+    versions=( ~/.gvm/environments/(go|system)[[:digit:].]#(:to) )
+    _wanted gvm-go-versions expl "GVM Go versions" compadd -a versions
+}
+
+_gvm "$@"

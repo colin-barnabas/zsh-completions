@@ -1,0 +1,2 @@
+#compdef rga
+compdef _rg rga
